@@ -39,10 +39,6 @@ while len(traversal_graph.rooms) < len(room_graph):
     traversal_graph.bfs()
     traversal_graph.dft_recursive()
 
-# print('===')
-# print('Rooms:', traversal_graph.rooms)
-# print('Traversal Path:', traversal_graph.traversal_path)
-
 traversal_path = traversal_graph.traversal_path
 
 # ------------------------------------------------------------------------
