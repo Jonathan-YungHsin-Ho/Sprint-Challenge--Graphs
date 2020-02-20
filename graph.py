@@ -25,13 +25,12 @@ class Graph():
 
     # Get all exits (edges) of a room (vertex)
     def get_exits(self, room_id):
-        # print('28', room_id)
         return self.rooms[room_id]
 
     # Navigate to next room given input of direction
     def take_exit(self, direction):
-        print(f'{direction} exit unexplored, traveling {direction}')
-        print('---')
+        # print(f'{direction} exit unexplored, traveling {direction}')
+        # print('---')
         room_leaving = self.player.current_room
         self.player.travel(direction)
         self.traversal_path.append(direction)
@@ -43,7 +42,6 @@ class Graph():
     def dft_recursive(self, starting_room=None, finished=None):
         starting_room = starting_room or self.player.current_room
         finished = finished or set()
-        # print('DFT_R', starting_room.id)
 
         if starting_room not in finished:
             self.add_room(starting_room.id, starting_room.get_exits())
@@ -51,8 +49,8 @@ class Graph():
             current_room_id = starting_room.id
             current_exits = self.get_exits(current_room_id)
 
-            print('Current Room:', current_room_id)
-            print('Exits:', current_exits)
+            # print('Current Room:', current_room_id)
+            # print('Exits:', current_exits)
 
             if 'n' in current_exits and current_exits['n'] == '?':
                 new_room = self.take_exit('n')
@@ -67,31 +65,23 @@ class Graph():
                 new_room = self.take_exit('w')
                 self.dft_recursive(new_room, finished)
             else:
-                print('All exits explored!')
+                # print('All exits explored!')
                 finished.add(starting_room)
 
     def bfs(self, starting_room=None):
-        # print('BFS RUN')
         starting_room = starting_room or self.player.current_room
         queue = Queue()
         queue.enqueue([starting_room.id])
         visited = set()
 
         while queue.size() > 0:
-            # print('Q SIZE', queue.size())
             self.add_room(starting_room.id, starting_room.get_exits())
 
             current_path = queue.dequeue()
             current_room_id = current_path[-1]
-            # print('LINE 80', current_room_id)
             current_exits = self.get_exits(current_room_id)
 
-            # print('BFS current exits', current_exits)
-
             if '?' in current_exits.values():
-                # print('?', current_path)
-                # print('traversal_path', self.traversal_path)
-                # print('XXXXXXX')
                 self.convert_bfs_to_directions(current_path)
                 return
 
@@ -102,8 +92,6 @@ class Graph():
                     queue.enqueue(path_to_next_room)
 
     def convert_bfs_to_directions(self, list_rooms):
-        # print('CURRENT ROOM', self.player.current_room.id)
-        # print('LIST TO CONVERT', list_rooms)
         for index in range(len(list_rooms) - 1):
             # print(index, list_rooms[index], list_rooms[index + 1])
             # print('ROOM', list_rooms[index])
@@ -111,8 +99,5 @@ class Graph():
             # print('KEYS', self.get_exits(list_rooms[index]))
             key = next((key for key, value in self.get_exits(
                 list_rooms[index]).items() if value == list_rooms[index + 1]), None)
-            # print('KEY', key)
-            # print('BFS CONVERSION')
             self.player.travel(key)
             self.traversal_path.append(key)
-            # print(self.traversal_path)
