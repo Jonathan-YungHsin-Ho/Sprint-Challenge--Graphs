@@ -33,8 +33,10 @@ traversal_path = []
 
 # ------------------------------------------------------------------------
 
+# Instantiate Graph object
 traversal_graph = Graph(player)
 
+# Until the traversal graph matches the maze in size, run BFS algorithm to find nearest unexplored room, then run recursive DFT algorithm to traverse
 while len(traversal_graph.rooms) < len(room_graph):
     traversal_graph.bfs()
     traversal_graph.dft_recursive()
