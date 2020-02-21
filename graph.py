@@ -73,8 +73,8 @@ class Graph():
             current_room_id = starting_room.id
             current_exits = self.get_exits(current_room_id)
 
-            # directions = ['w', 'e', 's', 'n']
-            directions = ['s', 'e', 'w', 'n']
+            directions = ['s', 'w', 'n', 'e']
+            # directions = ['s', 'e', 'w', 'n']
 
             if directions[0] in current_exits and current_exits[directions[0]] == '?':
                 new_room = self.take_exit(directions[0])
