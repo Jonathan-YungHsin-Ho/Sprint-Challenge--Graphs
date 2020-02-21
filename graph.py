@@ -2,9 +2,10 @@ from utils import Queue
 
 
 class Graph():
-    def __init__(self, player):
+    def __init__(self, player, room_graph):
         self.rooms = {}
         self.player = player
+        self.room_graph = room_graph
         self.traversal_path = []
 
     # Add a room (vertex) to graph
@@ -13,6 +14,7 @@ class Graph():
             self.rooms[room_id] = {}
             for exit in exits:
                 self.rooms[room_id][exit] = '?'
+            # self.rooms[room_id]['coordinates'] = ()
 
     # Add directed exits (edges) to graph
     def add_exits(self, room1, room2, direction):
@@ -37,6 +39,9 @@ class Graph():
         self.add_room(new_room.id, new_room.get_exits())
         self.add_exits(previous_room.id, new_room.id, direction)
 
+        print('NEW ROOM', new_room.id)
+        print('ROOM GRAPH', self.room_graph[new_room.id][0])
+
         return new_room
 
     # Navigate to each room in depth-first order beginning from starting room, done using recursion
@@ -50,22 +55,20 @@ class Graph():
             current_room_id = starting_room.id
             current_exits = self.get_exits(current_room_id)
 
-            d1 = 's'
-            d2 = 'w'
-            d3 = 'n'
-            d4 = 'e'
+            # directions = ['s', 'w', 'n', 'e']
+            directions = ['s', 'e', 'w', 'n']
 
-            if d1 in current_exits and current_exits[d1] == '?':
-                new_room = self.take_exit(d1)
+            if directions[0] in current_exits and current_exits[directions[0]] == '?':
+                new_room = self.take_exit(directions[0])
                 self.dft_recursive(new_room, finished)
-            elif d2 in current_exits and current_exits[d2] == '?':
-                new_room = self.take_exit(d2)
+            elif directions[1] in current_exits and current_exits[directions[1]] == '?':
+                new_room = self.take_exit(directions[1])
                 self.dft_recursive(new_room, finished)
-            elif d3 in current_exits and current_exits[d3] == '?':
-                new_room = self.take_exit(d3)
+            elif directions[2] in current_exits and current_exits[directions[2]] == '?':
+                new_room = self.take_exit(directions[2])
                 self.dft_recursive(new_room, finished)
-            elif d4 in current_exits and current_exits[d4] == '?':
-                new_room = self.take_exit(d4)
+            elif directions[3] in current_exits and current_exits[directions[3]] == '?':
+                new_room = self.take_exit(directions[3])
                 self.dft_recursive(new_room, finished)
             else:
                 finished.add(starting_room)
@@ -83,6 +86,9 @@ class Graph():
             current_path = queue.dequeue()
             current_room_id = current_path[-1]
             current_exits = self.get_exits(current_room_id)
+
+            # print('Path', self.traversal_path)
+            # print('BFS', current_room_id)
 
             if '?' in current_exits.values():
                 self.convert_path_to_directions(current_path)
