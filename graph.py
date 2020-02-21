@@ -11,23 +11,37 @@ class Graph():
     # Add a room (vertex) to graph
     def add_room(self, room_id, exits):
         if room_id not in self.rooms:
-            self.rooms[room_id] = {}
+            # self.rooms[room_id] = {}
+            # ***
+            self.rooms[room_id] = [{}]
+            # self.rooms[room_id][0] = {}
+            # ***
             for exit in exits:
-                self.rooms[room_id][exit] = '?'
+                # self.rooms[room_id][exit] = '?'
+                # ***
+                self.rooms[room_id][0][exit] = '?'
+                # ***
             # self.rooms[room_id]['coordinates'] = ()
 
     # Add directed exits (edges) to graph
     def add_exits(self, room1, room2, direction):
         opposite_direction = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
         if room1 in self.rooms and room2 in self.rooms:
-            self.rooms[room1][direction] = room2
-            self.rooms[room2][opposite_direction[direction]] = room1
+            # self.rooms[room1][direction] = room2
+            # self.rooms[room2][opposite_direction[direction]] = room1
+            # ***
+            self.rooms[room1][0][direction] = room2
+            self.rooms[room2][0][opposite_direction[direction]] = room1
+            # ***
         else:
             raise IndexError('That room does not exist!')
 
     # Get all exits (edges) of a room (vertex)
     def get_exits(self, room_id):
-        return self.rooms[room_id]
+        # return self.rooms[room_id]
+        # ***
+        return self.rooms[room_id][0]
+        # ***
 
     # Navigate to next room and update graph
     def take_exit(self, direction):
@@ -55,8 +69,8 @@ class Graph():
             current_room_id = starting_room.id
             current_exits = self.get_exits(current_room_id)
 
-            # directions = ['s', 'w', 'n', 'e']
-            directions = ['s', 'e', 'w', 'n']
+            directions = ['s', 'w', 'n', 'e']
+            # directions = ['s', 'e', 'w', 'n']
 
             if directions[0] in current_exits and current_exits[directions[0]] == '?':
                 new_room = self.take_exit(directions[0])
