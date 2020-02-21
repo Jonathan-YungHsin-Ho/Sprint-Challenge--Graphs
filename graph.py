@@ -1,3 +1,5 @@
+import random
+
 from utils import Queue
 
 
@@ -55,9 +57,6 @@ class Graph():
             new_coordinates = (prev_coordinates[0] - 1, prev_coordinates[1])
 
         self.rooms[new_room.id][1] = new_coordinates
-
-        # print('NEW ROOM', self.rooms[new_room.id])
-
         self.check_coordinates()
 
         return new_room
@@ -74,7 +73,9 @@ class Graph():
             current_exits = self.get_exits(current_room_id)
 
             directions = ['s', 'w', 'n', 'e']
-            # directions = ['s', 'e', 'w', 'n']
+            # directions = ['s', 'e', 'n', 'w']
+
+            random.shuffle(directions)
 
             if directions[0] in current_exits and current_exits[directions[0]] == '?':
                 new_room = self.take_exit(directions[0])
@@ -104,9 +105,6 @@ class Graph():
             current_path = queue.dequeue()
             current_room_id = current_path[-1]
             current_exits = self.get_exits(current_room_id)
-
-            # print('Path', self.traversal_path)
-            # print('BFS', current_room_id)
 
             if '?' in current_exits.values():
                 self.convert_path_to_directions(current_path)

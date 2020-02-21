@@ -34,17 +34,43 @@ traversal_path = []
 
 # ------------------------------------------------------------------------
 
-# Instantiate Graph object
-traversal_graph = Graph(player)
+# # Single Trial
 
-# Until the traversal graph matches the maze in size, run BFS algorithm to find nearest unexplored room, then run recursive DFT algorithm to traverse
-while len(traversal_graph.rooms) < len(room_graph):
-    traversal_graph.bfs()
-    traversal_graph.dft_recursive()
+# # Instantiate Graph object
+# traversal_graph = Graph(player)
 
-# Replace traversal_path variable with traversal_path attribute in graph object
-traversal_path = traversal_graph.traversal_path
-# print(traversal_path)
+# # Until the traversal graph matches the maze in size, run BFS algorithm to find nearest unexplored room, then run recursive DFT algorithm to traverse
+# while len(traversal_graph.rooms) < len(room_graph):
+#     traversal_graph.bfs()
+#     traversal_graph.dft_recursive()
+
+# # Replace traversal_path variable with traversal_path attribute in graph object
+# traversal_path = traversal_graph.traversal_path
+
+# ------------------------------------------------------------------------
+
+# Multiple Trials
+
+generated_paths = []
+
+for i in range(700):
+    player = Player(world.starting_room)
+    traversal_graph = Graph(player)
+
+    while len(traversal_graph.rooms) < len(room_graph):
+        traversal_graph.bfs()
+        traversal_graph.dft_recursive()
+
+    generated_paths.append(traversal_graph.traversal_path)
+
+shortest_path = generated_paths[0]
+shortest_length = len(generated_paths[0])
+for path in generated_paths:
+    if len(path) < shortest_length:
+        shortest_path = path
+        shortest_length = len(shortest_path)
+
+traversal_path = shortest_path
 
 # ------------------------------------------------------------------------
 
