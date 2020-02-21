@@ -16,8 +16,8 @@ world = World()
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-# map_file = 'maps/test_loop_fork2.txt'
-map_file = "maps/main_maze.txt"
+map_file = 'maps/test_loop_fork2.txt'
+# map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
@@ -35,7 +35,7 @@ traversal_path = []
 # ------------------------------------------------------------------------
 
 # Instantiate Graph object
-traversal_graph = Graph(player, room_graph)
+traversal_graph = Graph(player)
 
 # Until the traversal graph matches the maze in size, run BFS algorithm to find nearest unexplored room, then run recursive DFT algorithm to traverse
 while len(traversal_graph.rooms) < len(room_graph):

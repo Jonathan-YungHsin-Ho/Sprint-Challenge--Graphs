@@ -2,46 +2,36 @@ from utils import Queue
 
 
 class Graph():
-    def __init__(self, player, room_graph):
+    def __init__(self, player):
         self.rooms = {}
         self.player = player
-        self.room_graph = room_graph
         self.traversal_path = []
 
     # Add a room (vertex) to graph
     def add_room(self, room_id, exits):
         if room_id not in self.rooms:
-            # self.rooms[room_id] = {}
-            # ***
-            self.rooms[room_id] = [{}]
-            # self.rooms[room_id][0] = {}
-            # ***
+            self.rooms[room_id] = [{}, ()]
             for exit in exits:
-                # self.rooms[room_id][exit] = '?'
-                # ***
                 self.rooms[room_id][0][exit] = '?'
-                # ***
-            # self.rooms[room_id]['coordinates'] = ()
+        if room_id == 0:
+            self.rooms[room_id][1] = (0, 0)
 
-    # Add directed exits (edges) to graph
-    def add_exits(self, room1, room2, direction):
+    # Add directed connection (edges) between two exits
+    def add_connection(self, room1_id, room2_id, direction):
         opposite_direction = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
-        if room1 in self.rooms and room2 in self.rooms:
-            # self.rooms[room1][direction] = room2
-            # self.rooms[room2][opposite_direction[direction]] = room1
-            # ***
-            self.rooms[room1][0][direction] = room2
-            self.rooms[room2][0][opposite_direction[direction]] = room1
-            # ***
+        if room1_id in self.rooms and room2_id in self.rooms:
+            self.rooms[room1_id][0][direction] = room2_id
+            self.rooms[room2_id][0][opposite_direction[direction]] = room1_id
         else:
             raise IndexError('That room does not exist!')
 
     # Get all exits (edges) of a room (vertex)
     def get_exits(self, room_id):
-        # return self.rooms[room_id]
-        # ***
         return self.rooms[room_id][0]
-        # ***
+
+    # Get coordinates of a room (vertex)
+    def get_coordinates(self, room_id):
+        return self.rooms[room_id][1]
 
     # Navigate to next room and update graph
     def take_exit(self, direction):
@@ -51,10 +41,24 @@ class Graph():
 
         new_room = self.player.current_room
         self.add_room(new_room.id, new_room.get_exits())
-        self.add_exits(previous_room.id, new_room.id, direction)
+        self.add_connection(previous_room.id, new_room.id, direction)
 
-        print('NEW ROOM', new_room.id)
-        print('ROOM GRAPH', self.room_graph[new_room.id][0])
+        prev_coordinates = self.get_coordinates(previous_room.id)
+
+        if direction == 'n':
+            new_coordinates = (prev_coordinates[0], prev_coordinates[1] + 1)
+        if direction == 's':
+            new_coordinates = (prev_coordinates[0], prev_coordinates[1] - 1)
+        if direction == 'e':
+            new_coordinates = (prev_coordinates[0] + 1, prev_coordinates[1])
+        if direction == 'w':
+            new_coordinates = (prev_coordinates[0] - 1, prev_coordinates[1])
+
+        self.rooms[new_room.id][1] = new_coordinates
+
+        # print('NEW ROOM', self.rooms[new_room.id])
+
+        self.check_coordinates()
 
         return new_room
 
@@ -69,8 +73,8 @@ class Graph():
             current_room_id = starting_room.id
             current_exits = self.get_exits(current_room_id)
 
-            directions = ['s', 'w', 'n', 'e']
-            # directions = ['s', 'e', 'w', 'n']
+            # directions = ['w', 'e', 's', 'n']
+            directions = ['s', 'e', 'w', 'n']
 
             if directions[0] in current_exits and current_exits[directions[0]] == '?':
                 new_room = self.take_exit(directions[0])
@@ -124,3 +128,46 @@ class Graph():
                 (direction for direction, room in current_exits if room == next_room), None)
             self.player.travel(direction)
             self.traversal_path.append(direction)
+            self.check_coordinates()
+
+    # Check coordinates in each room to review for adjacency
+    def check_coordinates(self, starting_room=None):
+        starting_room = starting_room or self.player.current_room
+
+        current_coordinates = self.get_coordinates(starting_room.id)
+        current_exits = self.get_exits(starting_room.id)
+        current_room_id = starting_room.id
+
+        directions = ['n', 's', 'e', 'w']
+
+        if directions[0] in current_exits and current_exits[directions[0]] == '?':
+            coordinates_to_check = (
+                current_coordinates[0], current_coordinates[1] + 1)
+            self.check_for_adjacent_room(
+                current_room_id, coordinates_to_check, directions[0])
+
+        if directions[1] in current_exits and current_exits[directions[1]] == '?':
+            coordinates_to_check = (
+                current_coordinates[0], current_coordinates[1] - 1)
+            self.check_for_adjacent_room(
+                current_room_id, coordinates_to_check, directions[1])
+
+        if directions[2] in current_exits and current_exits[directions[2]] == '?':
+            coordinates_to_check = (
+                current_coordinates[0] + 1, current_coordinates[1])
+            self.check_for_adjacent_room(
+                current_room_id, coordinates_to_check, directions[2])
+
+        if directions[3] in current_exits and current_exits[directions[3]] == '?':
+            coordinates_to_check = (
+                current_coordinates[0] - 1, current_coordinates[1])
+            self.check_for_adjacent_room(
+                current_room_id, coordinates_to_check, directions[3])
+
+    # Check if an adjacent room already exists; if so, add a connection
+    def check_for_adjacent_room(self, current_room_id, adjacent_coordinates, direction):
+        room_id = next(
+            (id for id, value in self.rooms.items() if value[1] == adjacent_coordinates), None)
+
+        if room_id:
+            self.add_connection(current_room_id, room_id, direction)
