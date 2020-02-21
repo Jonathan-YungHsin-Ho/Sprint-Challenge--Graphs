@@ -16,6 +16,7 @@ world = World()
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
+# map_file = 'maps/test_loop_fork2.txt'
 map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
@@ -41,6 +42,7 @@ while len(traversal_graph.rooms) < len(room_graph):
     traversal_graph.bfs()
     traversal_graph.dft_recursive()
 
+# Replace traversal_path variable with traversal_path attribute in graph object
 traversal_path = traversal_graph.traversal_path
 
 # ------------------------------------------------------------------------

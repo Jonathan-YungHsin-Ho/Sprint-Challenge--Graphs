@@ -29,12 +29,14 @@ class Graph():
 
     # Navigate to next room and update graph
     def take_exit(self, direction):
-        room_leaving = self.player.current_room
+        previous_room = self.player.current_room
         self.player.travel(direction)
         self.traversal_path.append(direction)
+
         new_room = self.player.current_room
         self.add_room(new_room.id, new_room.get_exits())
-        self.add_exits(room_leaving.id, new_room.id, direction)
+        self.add_exits(previous_room.id, new_room.id, direction)
+
         return new_room
 
     # Navigate to each room in depth-first order beginning from starting room, done using recursion
@@ -83,7 +85,7 @@ class Graph():
             current_exits = self.get_exits(current_room_id)
 
             if '?' in current_exits.values():
-                self.convert_bfs_to_directions(current_path)
+                self.convert_path_to_directions(current_path)
                 return
 
             if current_room_id not in visited:
@@ -93,12 +95,12 @@ class Graph():
                     queue.enqueue(path_to_next_room)
 
     # Convert list of room IDs to lists of directions to add to traversal path
-    def convert_bfs_to_directions(self, list_rooms):
-        steps = len(list_rooms) - 1
-        for index in range(steps):
-            exits = self.get_exits(list_rooms[index]).items()
+    def convert_path_to_directions(self, list_rooms):
+        steps_in_path = len(list_rooms) - 1
+        for index in range(steps_in_path):
+            current_exits = self.get_exits(list_rooms[index]).items()
             next_room = list_rooms[index + 1]
             direction = next(
-                (direction for direction, room in exits if room == next_room), None)
+                (direction for direction, room in current_exits if room == next_room), None)
             self.player.travel(direction)
             self.traversal_path.append(direction)
